@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Students</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>All Students</h1>
+    <div class="container">
+        <button onclick="generatePDF()">Download as PDF</button>
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Roll No</th>
+                    <th>Branch</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Function to display all students
+        function displayAllStudents() {
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+            let studentsTableBody = document.querySelector('#studentsTable tbody');
+
+            if (students.length > 0) {
+                studentsTableBody.innerHTML = students.map(student => `
+                    <tr>
+                        <td>${student.name}</td>
+                        <td>${student.rollno}</td>
+                        <td>${student.branch}</td>
+                        <td>${student.email}</td>
+                        <td>${student.phone}</td>
+                        <td>${student.address}</td>
+                    </tr>
+                `).join('');
+            } else {
+                studentsTableBody.innerHTML = '<tr><td colspan="6">No students found.</td></tr>';
+            }
+        }
+
+        // Function to generate PDF
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+            if (students.length === 0) {
+                alert('No students to generate PDF');
+                return;
+            }
+
+            let y = 20; // initial Y position for text
+            doc.setFontSize(12);
+            doc.text('Student Information', 20, x);
+            x += 10;
+
+            // Adding table headers
+            doc.text('Name', 20, x);
+            doc.text('Roll No', 60, x);
+            doc.text('Branch', 100, x);
+            doc.text('Email', 140, x);
+            doc.text('Phone', 180, x);
+            doc.text('Address', 220, x);
+            y += 10;
+
+            // Adding student data to the table in the PDF
+            students.forEach(student => {
+                doc.text(student.name, 20, x);
+                doc.text(student.rollno, 60, x);
+                doc.text(student.branch, 100, x);
+                doc.text(student.email, 140, x);
+                doc.text(student.phone, 180, x);
+                doc.text(student.address, 220, x);
+                y += 10;
+            });
+
+            // Save the PDF
+            doc.save('students_info.pdf');
+        }
+
+        // Call the display function when the page loads
+        window.onload = displayAllStudents;
+    </script>
+</body>
+
+</html>

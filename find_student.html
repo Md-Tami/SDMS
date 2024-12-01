@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Student</title>
+    <style>
+        /* Same styles as before */
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #studentInfo {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Find Student</h1>
+    <div class="container">
+        <input type="text" id="rollnoFind" placeholder="Roll Number">
+        <input type="text" id="branchFind" placeholder="Branch">
+        <button onclick="findStudent()">View</button>
+    </div>
+
+    <div id="studentInfo"></div>
+    <button id="generatePDF" style="display:none;" onclick="generatePDF()">Download as PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        function findStudent() {
+            let rollno = document.getElementById('rollnoFind').value;
+            let branch = document.getElementById('branchFind').value;
+
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+            let foundStudent = students.find(student => student.rollno === rollno && student.branch === branch);
+
+            if (foundStudent) {
+                document.getElementById('studentInfo').innerHTML = `
+                    <h3>Student Information:</h3>
+                    <p>Name: ${foundStudent.name}</p>
+                    <p>Roll No: ${foundStudent.rollno}</p>
+                    <p>Branch: ${foundStudent.branch}</p>
+                    <p>Email: ${foundStudent.email}</p>
+                    <p>Phone: ${foundStudent.phone}</p>
+                    <p>Address: ${foundStudent.address}</p>
+                `;
+                document.getElementById('generatePDF').style.display = 'inline-block';
+            } else {
+                document.getElementById('studentInfo').innerHTML = `<p>Student not found.</p>`;
+                document.getElementById('generatePDF').style.display = 'none';
+            }
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            let rollno = document.getElementById('rollnoFind').value;
+            let branch = document.getElementById('branchFind').value;
+
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+            let foundStudent = students.find(student => student.rollno === rollno && student.branch === branch);
+
+            if (foundStudent) {
+                doc.setFontSize(12);
+                doc.text('Student Information', 20, 20);
+                doc.text(`Name: ${foundStudent.name}`, 20, 30);
+                doc.text(`Roll No: ${foundStudent.rollno}`, 20, 40);
+                doc.text(`Branch: ${foundStudent.branch}`, 20, 50);
+                doc.text(`Email: ${foundStudent.email}`, 20, 60);
+                doc.text(`Phone: ${foundStudent.phone}`, 20, 70);
+                doc.text(`Address: ${foundStudent.address}`, 20, 80);
+
+                // Save the PDF
+                doc.save('student_info.pdf');
+            } else {
+                alert('Student not found');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

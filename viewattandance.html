@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Attendance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        .no-data {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>View Attendance</h1>
+
+    <div class="container" id="attendance-container">
+        <!-- Attendance Data will be displayed here -->
+        <div class="no-data" id="no-data-message" style="display: none;">No attendance data available.</div>
+        <table id="attendance-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Branch</th>
+                    <th>Subjects</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="attendance-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        window.onload = function () {
+            // Get attendance data from localStorage
+            let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+
+            // Check if attendance data is available
+            if (attendance.length === 0) {
+                document.getElementById('no-data-message').style.display = 'block';
+            } else {
+                const tableBody = document.getElementById('attendance-body');
+
+                // Display attendance data in table
+                attendance.forEach(entry => {
+                    const row = document.createElement('tr');
+
+                    const rollNoCell = document.createElement('td');
+                    rollNoCell.textContent = entry.rollNo;
+                    row.appendChild(rollNoCell);
+
+                    const branchCell = document.createElement('td');
+                    branchCell.textContent = entry.branch;
+                    row.appendChild(branchCell);
+
+                    const subjectsCell = document.createElement('td');
+                    subjectsCell.textContent = entry.subjects.join(', '); // Joining subjects with a comma
+                    row.appendChild(subjectsCell);
+
+                    const statusCell = document.createElement('td');
+                    statusCell.textContent = entry.status;
+                    row.appendChild(statusCell);
+
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = entry.date;
+                    row.appendChild(dateCell);
+
+                    tableBody.appendChild(row);
+                });
+
+                // Show the table and hide the no data message
+                document.getElementById('attendance-table').style.display = 'block';
+            }
+        };
+    </script>
+</body>
+
+</html>

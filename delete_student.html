@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Student</title>
+    <style>
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Delete Student</h1>
+    <div class="container">
+        <input type="text" id="rollnoDelete" placeholder="Roll Number">
+        <input type="text" id="branchDelete" placeholder="Branch">
+        <button onclick="deleteStudent()">Delete</button>
+    </div>
+
+    <script>
+        function deleteStudent() {
+            let rollno = document.getElementById('rollnoDelete').value;
+            let branch = document.getElementById('branchDelete').value;
+
+            if (!rollno || !branch) {
+                alert("Please enter both Roll Number and Branch.");
+                return;
+            }
+
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+            let updatedStudents = students.filter(student => student.rollNo !== rollno || student.branch !== branch);
+
+            // Update localStorage with the new list of students (after deletion)
+            localStorage.setItem('students', JSON.stringify(updatedStudents));
+
+            alert('Student Deleted (if found)');
+
+            // Redirect back to the main page
+            window.location.href = 'index.html'; // Or any other page you want
+        }
+
+        // You may also want to make sure the PDF generation always reflects the latest data
+        function generateStudentPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Getting updated student data from localStorage after deletion
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+
+            if (students.length === 0) {
+                alert('No student data available!');
+                return;
+            }
+
+            // Set the title for the PDF document
+            doc.setFontSize(18);
+            doc.text('Student Data', 14, 20);
+            doc.setFontSize(12);
+
+            // Table headers
+            const headers = ['Name', 'Roll No', 'Branch', 'Email', 'Phone', 'Address'];
+
+            // Table data (mapping student data)
+            const tableData = students.map(student => [
+                student.name,
+                student.rollNo,
+                student.branch,
+                student.email,
+                student.phone,
+                student.address
+            ]);
+
+            // Table formatting options
+            doc.autoTable({
+                startY: 30,  // Start position for the table
+                head: [headers],
+                body: tableData,
+                theme: 'grid',
+                headStyles: { fillColor: [41, 128, 185] }, // Header background color
+                bodyStyles: { textColor: [0, 0, 0] },
+                margin: { top: 20 },  // Margin for the table
+            });
+
+            // Save the PDF document
+            doc.save('students_data.pdf');
+        }
+    </script>
+
+</body>
+
+</html>

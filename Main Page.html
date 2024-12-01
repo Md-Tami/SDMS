@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Student Management System</h1>
+
+    <div class="container">
+        <div class="button-group">
+            <button onclick="location.href='add_student.html'">Add Student</button>
+            <button onclick="location.href='Updatestudent.html'">Update Student Data</button>
+            <button onclick="location.href='delete_student.html'">Delete Student</button>
+            <button onclick="location.href='find_student.html'">Find Student</button>
+            <button onclick="location.href='view_all_students.html'">View All Students</button>
+            <button onclick="location.href='attendance.html'">Attendance</button>
+            <button onclick="location.href='downloadat.html'">View All Attendance</button>
+        </div>
+
+        <div class="button-group">
+            <button onclick="generateStudentPDF()">Download Student Data (PDF)</button>
+        </div>
+    </div>
+
+    <!-- Include jsPDF and jsPDF AutoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        // Function to generate and download student data as PDF
+        function generateStudentPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Getting student data from localStorage
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+
+            if (students.length === 0) {
+                alert('No student data available!');
+                return;
+            }
+
+            // Set the title for the PDF document
+            doc.setFontSize(18);
+            doc.text('Student Data', 14, 20);
+            doc.setFontSize(12);
+
+            // Table headers
+            const headers = ['Name', 'Roll No', 'Branch', 'Email', 'Phone', 'Address'];
+
+            // Table data (mapping student data)
+            const tableData = students.map(student => [
+                student.name,
+                student.rollNo,
+                student.branch,
+                student.email,
+                student.phone,
+                student.address
+            ]);
+
+            // Table formatting options
+            doc.autoTable({
+                startY: 30,  // Start position for the table
+                head: [headers],
+                body: tableData,
+                theme: 'grid',
+                headStyles: { fillColor: [41, 128, 185] }, // Header background color
+                bodyStyles: { textColor: [0, 0, 0] },
+                margin: { top: 20 },  // Margin for the table
+            });
+
+            // Save the PDF document
+            doc.save('students_data.pdf');
+        }
+    </script>
+</body>
+
+</html>
